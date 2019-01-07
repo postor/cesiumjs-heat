@@ -10,7 +10,7 @@ module.exports = (env, argv) => {
   return {
     context: path.resolve(__dirname, 'src'),
     entry: {
-      app: ['@babel/polyfill', './css/style.js', './index.ts']
+      app: ['@babel/polyfill',  './index.ts']
     },
     output: {
       filename: 'js/[name].' + (mode === 'development' ? '' : '[chunkhash:6].') + 'js',

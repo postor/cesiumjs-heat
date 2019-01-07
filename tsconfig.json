@@ -1,1 +1,6 @@
-{}
+{
+  "include": [
+    "src",
+    "./defs.d.ts"
+  ]
+}
