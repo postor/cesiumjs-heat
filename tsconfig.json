@@ -1,6 +1,11 @@
 {
   "include": [
     "src",
-    "./defs.d.ts"
-  ]
+    "types/*"
+  ],
+  "compilerOptions": {
+    "target": "es6",
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
+  }
 }

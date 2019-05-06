@@ -1,6 +1,5 @@
 const path = require('path');
 
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const htmlTemplate = require('html-webpack-template');
 
@@ -40,7 +39,7 @@ module.exports = (env, argv) => {
         inject: false,
         template: htmlTemplate,
         title: 'GeoPort',
-        appMountId: 'container',
+        appMountIds: ['heatmap','container'],
         scripts: ['cesium/Cesium.js']
       })
     ],

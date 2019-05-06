@@ -1,23 +1,20 @@
 require('cesium/Build/Cesium/Widgets/widgets.css');
 require('./css/main.css');
-require('./heatmap.js')
 import * as Cesium from 'cesium';
-import * as h337 from 'heatmap.js'
-
+import data from './data/last-all-airbox'
+import CesiumHeat from './lib/CesiumHeat';
 
 
 const viewer = new Cesium.Viewer('container');
-const scene = viewer.scene;
-const camera = scene.camera;
 
-let bounds = {
-  west: 147.13833844,
-  east: 147.13856899,
-  south: -41.43606916,
-  north: -41.43582929
-};
-
-// @ts-ignore
-//viewer.container = document.getElementById('container')
-console.log(viewer.container)
-// init heatmap
+new CesiumHeat(
+  viewer,
+  data.feeds.map(({ gps_lon, gps_lat, s_d0 }) => {
+    return {
+      x: gps_lon,
+      y: gps_lat,
+      value: s_d0,
+    }
+  }),
+  [120.106188593, 21.9705713974, 121.951243931, 25.2954588893]
+)

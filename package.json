@@ -1,30 +1,23 @@
 {
-  "name": "cesium-typescript-demo",
+  "name": "cesiumjs-heat",
   "version": "1.0.0",
-  "description": "",
-  "main": "webpack.config.js",
+  "main": "index.js",
+  "repository": "git@github.com:postor/cesiumjs-heat.git",
+  "author": "josh <postor@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "copy:cesium": "copyfiles -s -u 4 \"node_modules/cesium/Build/Cesium/**/*\" dist/cesium",
     "build": "npm run copy:cesium && webpack --mode production",
     "dev": "npm run copy:cesium && webpack-dev-server --mode development --open"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/postor/cesium-typescript-demo.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/postor/cesium-typescript-demo/issues"
-  },
-  "homepage": "https://github.com/postor/cesium-typescript-demo#readme",
   "devDependencies": {
-    "@types/cesium": "^1.47.3",
+    "@babel/polyfill": "^7.2.5",
+    "cesium": "^1.53.0",
     "copyfiles": "^2.1.0",
     "css-loader": "^2.1.0",
     "html-webpack-plugin": "^3.2.0",
+    "html-webpack-template": "^6.2.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.3.2",
     "typescript": "^3.2.2",
@@ -35,8 +28,6 @@
     "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
-    "cesium": "^1.53.0",
-    "html-webpack-template": "^6.2.0"
+    "heatmap.js": "^2.0.5"
   }
 }
