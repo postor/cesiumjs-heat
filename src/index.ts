@@ -6,6 +6,8 @@ import CesiumHeat from './lib/CesiumHeat';
 
 
 const viewer = new Cesium.Viewer('container');
+// @ts-ignore
+window.viewer = viewer
 
 new CesiumHeat(
   viewer,
@@ -16,5 +18,7 @@ new CesiumHeat(
       value: s_d0,
     }
   }),
-  [120.106188593, 21.9705713974, 121.951243931, 25.2954588893]
+  [120.106188593, 21.9705713974, 121.951243931, 25.2954588893],
+  {radius: 20}
 )
+
