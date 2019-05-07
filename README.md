@@ -1,13 +1,8 @@
 # cesium-heat
 
-heatmap for cesium
+heatmap for cesium | cesium的热力图
 
 ![screenshot](./screenshot.gif)
-
-## TODO
-
-- package as a lib
-- √ update radius when camera height changes
 
 ## usage
 
