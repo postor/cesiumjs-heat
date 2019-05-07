@@ -45,6 +45,7 @@ setTimeout(()=>heat.destory(),10*1000)
 
 ## params
 
+```
 let heat = new CesiumHeat(
   // cesium viewer
   viewer, 
@@ -76,3 +77,4 @@ let heat = new CesiumHeat(
   }
 )
 
+```
