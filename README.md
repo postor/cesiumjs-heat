@@ -11,6 +11,14 @@ heatmap for cesium
 
 ## usage
 
+install
+
+```
+npm i cesiumjs-heat --save
+```
+
+code
+
 ```
 import * as Cesium from 'cesium'
 import data from './data/last-all-airbox'
