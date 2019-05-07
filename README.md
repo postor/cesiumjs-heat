@@ -2,7 +2,7 @@
 
 heatmap for cesium
 
-![screenshot](./screenshot.png)
+![screenshot](./screenshot.gif)
 
 ## TODO
 

@@ -7,41 +7,68 @@ class CesiumHeat {
       enabled: true,
       min: 6375000,
       max: 10000000,
-      maxRadius: 20*2,
-      minRadius: 5*2,
-    }, canvasConfig = { width: 360*2, height: 720*2 }) {
+      maxRadius: 20 * 2,
+      minRadius: 5 * 2,
+    }, canvasConfig = { totalArea: 360 * 2 * 720 * 2, autoResize: true }) {
 
     if (typeof window == 'undefined') return
 
     this.viewer = viewer
     this.bbox = bbox
     this.autoRadiusConfig = autoRadiusConfig
-    this.canvasConfig = canvasConfig
     this.max = 0
 
-
-    let config = { ...heatmapConfig }
-    if (!config.container) {
-      this.mountPoint = newDiv({
-        width: 0,
-        height: 0,
-        position: `absolute`,
-        top: 0,
-        left: 0,
-        'z-index': -100,
-        overflow: 'hidden',
-      }, document.body)
-      config.container = newDiv(canvasConfig, this.mountPoint)
-    }
-    this.heatmapConfig = config
-
-    this.heatmap = h337.create(config)
-
+    // bbox计算基础信息
     const [left, bottom, right, top] = bbox
     let height = top - bottom, width = right - left
     this.boxMeta = {
       top, left, height, width
     }
+
+    // 计算画布大小
+    if (canvasConfig.autoResize) {
+      if (!canvasConfig.totalArea) {
+        throw 'specify totalArea if auto resize'
+      }
+      // w*h = totalArea
+      // w:h = width/height
+      const h = Math.floor(Math.sqrt(height * canvasConfig.totalArea))
+      const w = Math.floor(h * width / height)
+      this.canvasConfig = {
+        ...canvasConfig,
+        width: w,
+        height: h,
+      }
+    } else {
+      if (!canvasConfig.width || !canvasConfig.height) {
+        throw 'specify width and height if not auto resize'
+      }
+      this.canvasConfig = canvasConfig
+    }
+
+
+
+    let config = { ...heatmapConfig }
+    if (!config.container) {
+      this.mountPoint = newDiv({
+        position: `absolute`,
+        top: 0,
+        left: 0,
+        'z-index': -100,
+        overflow: 'hidden',
+        width: 0,
+        height: 0,
+      }, document.body)
+
+      config.container = newDiv({
+        width: this.canvasConfig.width,
+        height: this.canvasConfig.height
+      }, this.mountPoint)
+    }
+    this.heatmapConfig = config
+
+    this.heatmap = h337.create(config)
+
     let newData = data.map(x => this.convertData(x))
     this.data = newData
     let heatdata = {
@@ -61,7 +88,7 @@ class CesiumHeat {
     let h = this.viewer.camera.getMagnitude()
     const { min, max, minRadius, maxRadius } = this.autoRadiusConfig
     let newRadius = parseInt(minRadius + (maxRadius - minRadius) * (h - min) / (max - min))
-    console.log({newRadius,h})
+    console.log({ newRadius, h })
     this.heatmap.setData({
       max: this.max,
       data: this.data.map(({ x, y, value }) => {
