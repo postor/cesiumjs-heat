@@ -1,7 +1,6 @@
 import * as h337 from 'heatmap.js'
-import * as Cesium from 'cesium'
 
-class CesiumHeat {
+export default (Cesium) => class CesiumHeat {
   constructor(viewer, data = [], bbox = [-180, -90, 180, 90]
     , heatmapConfig = {}, autoRadiusConfig = {
       enabled: true,
@@ -9,7 +8,10 @@ class CesiumHeat {
       max: 10000000,
       maxRadius: 20 * 2,
       minRadius: 5 * 2,
-    }, canvasConfig = { totalArea: 360 * 2 * 720 * 2, autoResize: true }) {
+    }, canvasConfig = { 
+      totalArea: 360 * 2 * 720 * 2, 
+      autoResize: true, 
+    }) {
 
     if (typeof window == 'undefined') return
 
@@ -78,7 +80,8 @@ class CesiumHeat {
     this.heatmap.setData(heatdata)
     window.heatmap = this.heatmap
     this.updateCesium(autoRadiusConfig.enabled)
-    autoRadiusConfig.enabled && this.viewer.camera.moveEnd.addEventListener(() => this.updateCesium(true))
+    this.cameraMoveEnd = () => this.updateCesium(true)
+    autoRadiusConfig.enabled && this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEnd)
   }
 
   /**
@@ -88,7 +91,7 @@ class CesiumHeat {
     let h = this.viewer.camera.getMagnitude()
     const { min, max, minRadius, maxRadius } = this.autoRadiusConfig
     let newRadius = parseInt(minRadius + (maxRadius - minRadius) * (h - min) / (max - min))
-    console.log({ newRadius, h })
+    
     this.heatmap.setData({
       max: this.max,
       data: this.data.map(({ x, y, value }) => {
@@ -104,7 +107,7 @@ class CesiumHeat {
       this.viewer.scene.imageryLayers.remove(this.layer)
     }
     updateHeat && this.updateHeatmap()
-    //console.log(this.heatmap.getDataURL())
+    
     let provider = new Cesium.SingleTileImageryProvider({
       url: this.heatmap.getDataURL(),
       rectangle: Cesium.Rectangle.fromDegrees(...this.bbox)
@@ -131,6 +134,16 @@ class CesiumHeat {
     let y = parseInt((top - y1) / height * canvasConfig.height)
     return [x, y]
   }
+
+  destory(){
+    this.viewer.camera.moveEnd.removeEventListener(this.cameraMoveEnd)
+    if (this.layer) {
+      this.viewer.scene.imageryLayers.remove(this.layer)
+    }
+    if(this.mountPoint){
+      this.mountPoint.remove()
+    }
+  }
 }
 
 function newDiv(style, parent) {
@@ -145,5 +158,3 @@ function newDiv(style, parent) {
   }
   return div
 }
-
-export default CesiumHeat

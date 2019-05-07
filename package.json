@@ -1,14 +1,16 @@
 {
   "name": "cesiumjs-heat",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/get-cesium-heat.cmd.js",
   "repository": "git@github.com:postor/cesiumjs-heat.git",
   "author": "josh <postor@gmail.com>",
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:umd && npm run build:cmd",
     "copy:cesium": "copyfiles -s -u 4 \"node_modules/cesium/Build/Cesium/**/*\" dist/cesium",
-    "build": "npm run copy:cesium && webpack --mode production",
+    "build:umd": "webpack --config webpack.build.umd.js --mode production",
+    "build:cmd": "webpack --config webpack.build.cmd.js --mode production",
     "dev": "npm run copy:cesium && webpack-dev-server --mode development --open"
   },
   "devDependencies": {
