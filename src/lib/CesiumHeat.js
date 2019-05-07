@@ -1,16 +1,19 @@
 import * as h337 from 'heatmap.js'
 
 export default (Cesium) => class CesiumHeat {
-  constructor(viewer, data = [], bbox = [-180, -90, 180, 90]
+  constructor(viewer, data = {
+    autoMaxMin: true,
+    data: [],
+  }, bbox = [-180, -90, 180, 90]
     , heatmapConfig = {}, autoRadiusConfig = {
       enabled: true,
       min: 6375000,
       max: 10000000,
       maxRadius: 20 * 2,
       minRadius: 5 * 2,
-    }, canvasConfig = { 
-      totalArea: 360 * 2 * 720 * 2, 
-      autoResize: true, 
+    }, canvasConfig = {
+      totalArea: 360 * 2 * 720 * 2,
+      autoResize: true,
     }) {
 
     if (typeof window == 'undefined') return
@@ -18,7 +21,8 @@ export default (Cesium) => class CesiumHeat {
     this.viewer = viewer
     this.bbox = bbox
     this.autoRadiusConfig = autoRadiusConfig
-    this.max = 0
+    this.max = undefined
+    this.min = undefined
 
     // bbox计算基础信息
     const [left, bottom, right, top] = bbox
@@ -48,8 +52,7 @@ export default (Cesium) => class CesiumHeat {
       this.canvasConfig = canvasConfig
     }
 
-
-
+    // 初始化heatmap
     let config = { ...heatmapConfig }
     if (!config.container) {
       this.mountPoint = newDiv({
@@ -68,20 +71,63 @@ export default (Cesium) => class CesiumHeat {
       }, this.mountPoint)
     }
     this.heatmapConfig = config
-
     this.heatmap = h337.create(config)
 
-    let newData = data.map(x => this.convertData(x))
+    // 设置热力图数据
+    let dataConfig
+    if (Array.isArray(data)) {
+      dataConfig = {
+        autoMaxMin: true,
+        data,
+      }
+    } else {
+      dataConfig = {
+        ...data
+      }
+    }
+    if (!dataConfig.autoMaxMin) {
+      if (!dataConfig.min || !dataConfig.max) {
+        throw 'need max and min when not auto'
+      }
+      this.min = dataConfig.min
+      this.max = dataConfig.max
+    }
+    let newData = dataConfig.data.map(x => {
+      this.updateMaxMin(x.value)
+      return this.convertData(x)
+    })
+    delete dataConfig.data
+
+    this.dataConfig = dataConfig
     this.data = newData
     let heatdata = {
       max: this.max,
+      min: this.min,
       data: newData,
     }
     this.heatmap.setData(heatdata)
-    window.heatmap = this.heatmap
+
+    // 更新到cesium
     this.updateCesium(autoRadiusConfig.enabled)
     this.cameraMoveEnd = () => this.updateCesium(true)
     autoRadiusConfig.enabled && this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEnd)
+  }
+
+  /**
+   * 增加一个或多个点
+   * @param {Object|[]} x 
+   */
+  addData(x) {
+    if (Array.isArray(x)) {
+      this.data = this.data.concat(x.map(y => {
+        this.updateMaxMin(y.value)
+        return this.convertData(y)
+      }))
+    } else {
+      this.updateMaxMin(x.value)
+      this.data.push(this.convertData(x))
+    }
+    this.updateCesium(true)
   }
 
   /**
@@ -91,9 +137,10 @@ export default (Cesium) => class CesiumHeat {
     let h = this.viewer.camera.getMagnitude()
     const { min, max, minRadius, maxRadius } = this.autoRadiusConfig
     let newRadius = parseInt(minRadius + (maxRadius - minRadius) * (h - min) / (max - min))
-    
+
     this.heatmap.setData({
       max: this.max,
+      min: this.min,
       data: this.data.map(({ x, y, value }) => {
         return {
           x, y, value, radius: newRadius,
@@ -102,12 +149,16 @@ export default (Cesium) => class CesiumHeat {
     })
   }
 
+  /**
+   * 更新cesium显示
+   * @param {*} updateHeat 
+   */
   updateCesium(updateHeat) {
     if (this.layer) {
       this.viewer.scene.imageryLayers.remove(this.layer)
     }
     updateHeat && this.updateHeatmap()
-    
+
     let provider = new Cesium.SingleTileImageryProvider({
       url: this.heatmap.getDataURL(),
       rectangle: Cesium.Rectangle.fromDegrees(...this.bbox)
@@ -115,13 +166,33 @@ export default (Cesium) => class CesiumHeat {
     this.layer = this.viewer.scene.imageryLayers.addImageryProvider(provider)
   }
 
+  /**
+   * 转换坐标
+   * @param {*} param0 
+   */
   convertData({ x, y, value }) {
     let [px, py] = this.gps2point([x, y])
-    this.max = Math.max(value, this.max)
     return {
       x: px,
       y: py,
       value: value,
+    }
+  }
+
+  /**
+   * 更新最大值最小值
+   * @param {number} value 
+   */
+  updateMaxMin(value) {
+    if (this.max === undefined) {
+      this.max = value
+    } else {
+      this.max = Math.max(value, this.max)
+    }
+    if (this.min === undefined) {
+      this.min = value
+    } else {
+      this.min = Math.min(value, this.min)
     }
   }
 
@@ -135,17 +206,25 @@ export default (Cesium) => class CesiumHeat {
     return [x, y]
   }
 
-  destory(){
+  /**
+   * 销毁
+   */
+  destory() {
     this.viewer.camera.moveEnd.removeEventListener(this.cameraMoveEnd)
     if (this.layer) {
       this.viewer.scene.imageryLayers.remove(this.layer)
     }
-    if(this.mountPoint){
+    if (this.mountPoint) {
       this.mountPoint.remove()
     }
   }
 }
 
+/**
+ * 创建一个标签
+ * @param {*} style 
+ * @param {*} parent 
+ */
 function newDiv(style, parent) {
   let div = document.createElement('div')
   parent && parent.append(div)

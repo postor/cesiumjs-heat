@@ -1,6 +1,6 @@
 {
   "name": "cesiumjs-heat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "build/get-cesium-heat.cmd.js",
   "repository": "git@github.com:postor/cesiumjs-heat.git",
   "author": "josh <postor@gmail.com>",

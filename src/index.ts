@@ -6,19 +6,46 @@ import getCesiumHeat from './lib/CesiumHeat';
 
 const CesiumHeat = getCesiumHeat(Cesium)
 const viewer = new Cesium.Viewer('container');
-// @ts-ignore
-window.viewer = viewer
 
+let ge = getSlices(data.feeds.map(({ gps_lon, gps_lat, s_d0 }) => {
+  return {
+    x: gps_lon,
+    y: gps_lat,
+    value: s_d0,
+  }
+}))
+
+let bbox = [120.106188593, 21.9705713974, 121.951243931, 25.2954588893]
 let heat = new CesiumHeat(
   viewer,
-  data.feeds.map(({ gps_lon, gps_lat, s_d0 }) => {
-    return {
-      x: gps_lon,
-      y: gps_lat,
-      value: s_d0,
-    }
-  }),
-  [120.106188593, 21.9705713974, 121.951243931, 25.2954588893]
+  ge.next().value,
+  bbox
 )
 
-setTimeout(()=>heat.destory(),10*60*1000)
+viewer.camera.flyTo({
+  destination : Cesium.Rectangle.fromDegrees(...bbox),
+  duration: 0.1
+});
+
+let intval = setInterval(() => {
+  let { done, value } = ge.next()
+  if (done) {
+    clearInterval(intval)
+    return
+  }
+  heat.addData(value)
+},1000)
+
+setTimeout(() => {
+  clearInterval(intval)
+  heat.destory()
+}, 10 * 60 * 1000)
+
+function* getSlices(arr = [], limit = 100) {
+  let start = 0
+  while (arr.length - start > limit) {
+    yield arr.slice(start, start + limit)
+    start += limit
+  }
+  yield arr.slice(start)
+}
