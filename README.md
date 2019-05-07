@@ -7,4 +7,4 @@ heatmap for cesium
 ## TODO
 
 - package as a lib
-- update radius when camera height changes
+- √ update radius when camera height changes
