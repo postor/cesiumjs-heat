@@ -2,3 +2,5 @@
 /yarn.lock
 /dist
 /build
+/example/src/cesium
+/yarn-error.log

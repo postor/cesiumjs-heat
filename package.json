@@ -1,6 +1,6 @@
 {
   "name": "cesiumjs-heat",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "build/get-cesium-heat.cmd.js",
   "repository": "git@github.com:postor/cesiumjs-heat.git",
   "author": "josh <postor@gmail.com>",
@@ -14,7 +14,10 @@
     "dev": "npm run copy:cesium && webpack-dev-server --mode development --open"
   },
   "devDependencies": {
+    "@babel/core": "^7.7.7",
     "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.7.7",
+    "babel-loader": "^8.0.6",
     "cesium": "^1.53.0",
     "copyfiles": "^2.1.0",
     "css-loader": "^2.1.0",

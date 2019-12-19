@@ -8,6 +8,20 @@ module.exports = {
     filename: 'get-cesium-heat.cmd.js',
     path: join(__dirname, 'build')
   },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      }
+    ]
+  },
   externals: {
     'heatmap.js': 'heatmap.js'
   },
