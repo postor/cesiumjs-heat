@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copy:cesium": "copyfiles -s -u 4 \"node_modules/cesium/Build/Cesium/**/*\" src/cesium",
+    "copy:cesium": "copyfiles -s -u 4 \"node_modules/cesium/Build/Cesium/**/*\" dist/cesium",
     "dev": "npm run copy:cesium && webpack-dev-server --mode development"
   },
   "keywords": [],
