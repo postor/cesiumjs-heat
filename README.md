@@ -4,6 +4,8 @@ heatmap for cesium | cesium的热力图
 
 ![screenshot](./screenshot.gif)
 
+quick glance https://www.youtube.com/watch?v=m4_9aNZcv90&list=PLM1v95K5B1ntVsYvNJIxgRPppngrO_X4s
+
 ## usage
 
 install
