@@ -153,14 +153,13 @@ export default (Cesium) => class CesiumHeat {
    * 更新cesium显示
    * @param {*} updateHeat 
    */
-  updateCesium(updateHeat) {
+  async updateCesium(updateHeat) {
     if (this.layer) {
       this.viewer.scene.imageryLayers.remove(this.layer)
     }
     updateHeat && this.updateHeatmap()
 
-    let provider = new Cesium.SingleTileImageryProvider({
-      url: this.heatmap.getDataURL(),
+    let provider = await Cesium.SingleTileImageryProvider.fromUrl(this.heatmap.getDataURL(),{
       rectangle: Cesium.Rectangle.fromDegrees(...this.bbox)
     })
     this.layer = this.viewer.scene.imageryLayers.addImageryProvider(provider)
