@@ -1,7 +1,6 @@
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const htmlTemplate = require('html-webpack-template');
 
 module.exports = (env, argv) => {
 
@@ -14,6 +13,7 @@ module.exports = (env, argv) => {
     output: {
       filename: 'js/[name].' + (mode === 'development' ? '' : '[chunkhash:6].') + 'js',
       path: path.resolve(__dirname, 'dist'),
+      clean: true
     },
     externals: {
       cesium: 'Cesium'
@@ -30,16 +30,12 @@ module.exports = (env, argv) => {
       ],
     },
     devServer: {
-      contentBase: path.join(__dirname, "dist")
+      static: path.join(__dirname, "dist")
     },
     plugins: [
       new HtmlWebpackPlugin({
-        filename: path.resolve(__dirname, 'dist/index.html'),
-        inject: false,
-        template: htmlTemplate,
+        template: path.join(__dirname, 'src', 'index.html'),
         title: 'GeoPort',
-        appMountIds: ['heatmap', 'container'],
-        scripts: ['cesium/Cesium.js']
       })
     ],
   };

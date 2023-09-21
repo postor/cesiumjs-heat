@@ -17,6 +17,7 @@ data = require('./data.json').feeds.map(({ gps_lon, gps_lat, s_d0 }) => {
 })
 
 const getHeat = require('cesiumjs-heat').default
+console.log(getHeat)
 const CesiumHeat = getHeat(Cesium)
 const heat = new CesiumHeat(
   viewer,

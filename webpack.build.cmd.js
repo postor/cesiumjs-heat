@@ -3,8 +3,7 @@ const { join } = require('path')
 module.exports = {
   entry: join(__dirname, 'src', 'lib', 'CesiumHeat.js'),
   output: {
-    library: 'getCesiumHeat',
-    libraryTarget: 'commonjs2',
+    libraryTarget: 'commonjs',
     filename: 'get-cesium-heat.cmd.js',
     path: join(__dirname, 'build')
   },

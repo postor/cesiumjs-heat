@@ -34,7 +34,7 @@ let intval = setInterval(() => {
     return
   }
   heat.addData(value)
-},1000)
+},1)
 
 setTimeout(() => {
   clearInterval(intval)

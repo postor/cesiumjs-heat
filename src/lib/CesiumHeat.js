@@ -1,4 +1,5 @@
 import * as h337 from 'heatmap.js'
+import throttle from 'lodash.throttle'
 
 export default (Cesium) => class CesiumHeat {
   constructor(viewer, data = {
@@ -7,6 +8,7 @@ export default (Cesium) => class CesiumHeat {
   }, bbox = [-180, -90, 180, 90]
     , heatmapConfig = {}, autoRadiusConfig = {
       enabled: true,
+      throttle: 200, // ms
       min: 6375000,
       max: 10000000,
       maxRadius: 20 * 2,
@@ -17,6 +19,8 @@ export default (Cesium) => class CesiumHeat {
     }) {
 
     if (typeof window == 'undefined') return
+
+    this.updateCesium = throttle(this._updateCesium, autoRadiusConfig.throttle || 200)
 
     this.viewer = viewer
     this.bbox = bbox
@@ -153,15 +157,18 @@ export default (Cesium) => class CesiumHeat {
    * 更新cesium显示
    * @param {*} updateHeat 
    */
-  async updateCesium(updateHeat) {
+  async _updateCesium(updateHeat) {
     if (this.layer) {
       this.viewer.scene.imageryLayers.remove(this.layer)
     }
     updateHeat && this.updateHeatmap()
 
-    let provider = await Cesium.SingleTileImageryProvider.fromUrl(this.heatmap.getDataURL(),{
-      rectangle: Cesium.Rectangle.fromDegrees(...this.bbox)
-    })
+    let provider = await Cesium.SingleTileImageryProvider.fromUrl(
+      this.heatmap.getDataURL(),
+      {
+        rectangle: Cesium.Rectangle.fromDegrees(...this.bbox)
+      }
+    )
     this.layer = this.viewer.scene.imageryLayers.addImageryProvider(provider)
   }
 
