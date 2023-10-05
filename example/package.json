@@ -24,6 +24,6 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "cesiumjs-heat": "^1.0.4"
+    "cesiumjs-heat": "^1.0.7"
   }
 }

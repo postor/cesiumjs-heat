@@ -1,4 +1,4 @@
-import * as h337 from 'heatmap.js'
+import * as h337 from 'heatmap.js-fixed/build/heatmap'
 import throttle from 'lodash.throttle'
 
 export default (Cesium) => class CesiumHeat {
@@ -20,7 +20,7 @@ export default (Cesium) => class CesiumHeat {
 
     if (typeof window == 'undefined') return
 
-    this.updateCesium = throttle(this._updateCesium, autoRadiusConfig.throttle || 200)
+    this.updateCesium = throttle(this._updateCesium, autoRadiusConfig.throttle || 200, { 'trailing': true })
 
     this.viewer = viewer
     this.bbox = bbox
@@ -114,7 +114,19 @@ export default (Cesium) => class CesiumHeat {
     // 更新到cesium
     this.updateCesium(autoRadiusConfig.enabled)
     this.cameraMoveEnd = () => this.updateCesium(true)
-    autoRadiusConfig.enabled && this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEnd)
+    this.postRender = () => {
+      if (this.postRenderSkip) {
+        this.postRenderSkip = false
+        return
+      }
+      this.postRenderSkip = true
+      this.updateCesium(true)
+    }
+    if (autoRadiusConfig.enabled) {
+      this.viewer.camera.moveEnd.addEventListener(this.cameraMoveEnd)
+      // this.viewer.scene.postRender.addEventListener(this.postRender)
+    }
+
   }
 
   /**
@@ -216,7 +228,10 @@ export default (Cesium) => class CesiumHeat {
    * 销毁
    */
   destory() {
-    this.viewer.camera.moveEnd.removeEventListener(this.cameraMoveEnd)
+    if (this.autoRadiusConfig.enabled) {
+      this.viewer.camera.moveEnd.removeEventListener(this.cameraMoveEnd)
+      // this.viewer.scene.postRender.removeEventListener(this.postRender)
+    }
     if (this.layer) {
       this.viewer.scene.imageryLayers.remove(this.layer)
     }

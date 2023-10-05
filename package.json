@@ -1,9 +1,9 @@
 {
   "name": "cesiumjs-heat",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "main": "build/get-cesium-heat.cmd.js",
   "repository": "git@github.com:postor/cesiumjs-heat.git",
-  "author": "josh <postor@gmail.com>",
+  "author": "Josh <postor@gmail.com>",
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -31,7 +31,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "heatmap.js": "^2.0.5",
+    "heatmap.js-fixed": "^2.0.2",
     "lodash.throttle": "^4.1.1"
   }
 }
